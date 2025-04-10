@@ -1,0 +1,20 @@
+{
+    "name": "aks-openapi/aks-init-sdk",
+    "type": "library",
+    "description": "aks-init-php-sdk",
+    "license": "MIT",
+    "version": "1.0.0",
+    "autoload": {
+        "psr-4": {
+            "AksOpenapi\\AksInitSdk\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "haotaotao"
+        }
+    ],
+    "require": {
+        "php": ">=8.0"
+    }
+}
