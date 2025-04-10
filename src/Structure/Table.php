@@ -2,11 +2,19 @@
 
 namespace AksOpenapi\AksInitSdk\Structure;
 
+/**
+ * 生成表结构SQL
+ */
 trait Table
 {
-    public function createTableLogsStruct(): string
+    public static function getTableLogsTableName(): string
     {
-        $tableName = $this->prefix . 'init_table_logs';
+        return 'init_table_logs';
+    }
+
+    protected function createTableLogsStruct(): string
+    {
+        $tableName = $this->prefix . $this->getTableLogsTableName();
         $sql = <<<SQL
             CREATE TABLE IF NOT EXISTS `{$tableName}` (
               `id` int NOT NULL AUTO_INCREMENT COMMENT '日志id',
@@ -26,9 +34,14 @@ trait Table
         return trim($sql);
     }
 
-    public function createTableFieldLogsStruct(): string
+    public static function getTableFieldLogsTableName(): string
     {
-        $tableName = $this->prefix . 'init_tablefield_logs';
+        return 'init_tablefield_logs';
+    }
+
+    protected function createTableFieldLogsStruct(): string
+    {
+        $tableName = $this->prefix . $this->getTableFieldLogsTableName();
         $sql = <<<SQL
             CREATE TABLE IF NOT EXISTS `{$tableName}` (
               `id` int NOT NULL AUTO_INCREMENT COMMENT '日志id',
@@ -49,9 +62,14 @@ trait Table
         return trim($sql);
     }
 
-    public function createTableDataLogsStruct(): string
+    public static function getTableDataLogsTableName(): string
     {
-        $tableName = $this->prefix . 'init_tabledata_logs';
+        return 'init_tabledata_logs';
+    }
+
+    protected function createTableDataLogsStruct(): string
+    {
+        $tableName = $this->prefix . $this->getTableDataLogsTableName();
         $sql = <<<SQL
             CREATE TABLE IF NOT EXISTS `{$tableName}` (
               `id` int NOT NULL AUTO_INCREMENT COMMENT '日志id',
@@ -71,9 +89,14 @@ trait Table
         return trim($sql);
     }
 
+    public static function getTableDataRelationLogsTableName(): string
+    {
+        return 'init_tabledata_relation_logs';
+    }
+
     protected function createTableDataRelationLogsStruct(): string
     {
-        $tableName = $this->prefix . 'init_tabledata_relation_logs';
+        $tableName = $this->prefix . $this->getTableDataRelationLogsTableName();
         $sql = <<<SQL
             CREATE TABLE IF NOT EXISTS `{$tableName}` (
               `id` int NOT NULL AUTO_INCREMENT COMMENT '日志id',
@@ -94,6 +117,35 @@ trait Table
               `deleted_at` datetime DEFAULT NULL COMMENT '删除时间',
               PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='表数据关联记录日志表';
+        SQL;
+        return trim($sql);
+    }
+
+    protected function getAddFieldSql($table = '', $data = [])
+    {
+        $nullable = ($data['IS_NULLABLE'] == 'NO') ? 'NOT NULL' : 'NULL';
+        $strOrInt = (is_numeric($data['COLUMN_DEFAULT']) || $data['DATA_TYPE'] == 'datetime') ? $data['COLUMN_DEFAULT'] : "\"{$data['COLUMN_DEFAULT']}\"";
+        $defaultValue = empty($data['COLUMN_DEFAULT']) ? '' : "DEFAULT {$strOrInt}";
+        $charset = $data['CHARACTER_SET_NAME'] ? "CHARACTER SET {$data['CHARACTER_SET_NAME']}" : '';
+        $collate = $data['COLLATION_NAME'] ? "COLLATE {$data['COLLATION_NAME']}" : '';
+
+        $sql = <<<SQL
+            ALTER TABLE {$table} ADD COLUMN `{$data['COLUMN_NAME']}` {$data['COLUMN_TYPE']} {$charset} {$collate} {$nullable} {$defaultValue} COMMENT '{$data['COLUMN_COMMENT']}';
+        SQL;
+        return trim($sql);
+    }
+
+
+    protected function getModifyFieldSql($table = '', $data = [])
+    {
+        $nullable = ($data['IS_NULLABLE'] == 'NO') ? 'NOT NULL' : 'NULL';
+        $strOrInt = (is_numeric($data['COLUMN_DEFAULT']) || $data['DATA_TYPE'] == 'datetime') ? $data['COLUMN_DEFAULT'] : "\"{$data['COLUMN_DEFAULT']}\"";
+        $defaultValue = empty($data['COLUMN_DEFAULT']) ? '' : "DEFAULT {$strOrInt}";
+        $charset = $data['CHARACTER_SET_NAME'] ? "CHARACTER SET {$data['CHARACTER_SET_NAME']}" : '';
+        $collate = $data['COLLATION_NAME'] ? "COLLATE {$data['COLLATION_NAME']}" : '';
+
+        $sql = <<<SQL
+            ALTER TABLE {$table} MODIFY COLUMN `{$data['COLUMN_NAME']}` {$data['COLUMN_TYPE']} {$charset} {$collate} {$nullable} {$defaultValue} COMMENT '{$data['COLUMN_COMMENT']}';
         SQL;
         return trim($sql);
     }

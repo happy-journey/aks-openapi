@@ -2,20 +2,33 @@
 
 namespace AksOpenapi\AksInitSdk\Api;
 
-use AksOpenapi\AksInitSdk\Strcut\Table;
+use AksOpenapi\AksInitSdk\Helper\DbHelper;
+use AksOpenapi\AksInitSdk\Helper\TableHelper;
 
 /**
- * 初始化表
+ * 表相关功能
  */
-class InitTableService extends Table
+class InitTableService extends DbHelper
 {
 
-    /** 查询店铺信息
-     * @param $shop_id 店铺Id
+    /**
+     * 初始化表 根据基础表复制所有表
+     * @param string $code 标识
      * @return mixed
      */
-    public function get_shop($shop_id)
+    public function createTable(string $code): mixed
     {
-        return $this->client->call("eleme.shop.getShop", array("shopId" => $shop_id));
+        return TableHelper::createTable($code);
+    }
+
+
+    /**
+     * 更新所有表
+     * @param string $code 标识
+     * @return mixed
+     */
+    public function updateTable(string $code): mixed
+    {
+        return TableHelper::updateTable($code);
     }
 }
